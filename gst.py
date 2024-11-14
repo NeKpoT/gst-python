@@ -195,13 +195,8 @@ def main():
             status_list[x]["filePath"] for x in input_range if status_list[x]["mod"][1] != "D"]
         file_list_deleted = [
             status_list[x]["filePath"] for x in input_range if status_list[x]["mod"][1] == "D"]
-        non_deleted_cmd = cmds.copy()
-        non_deleted_cmd.extend(file_list_non_deleted)
-
-        deleted_cmd = cmds.copy()
-        deleted_cmd.extend(file_list_deleted)
-        bash(non_deleted_cmd)
-        bash(deleted_cmd)
+        bash(cmds + file_list_non_deleted) if file_list_non_deleted else []
+        bash(cmds + file_list_deleted) if file_list_deleted else []
         displayList()
     elif (args.checkout != None):  # git checkout
         cmds = ["git", "checkout", "HEAD"]
