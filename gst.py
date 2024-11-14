@@ -5,6 +5,8 @@ import os
 import subprocess
 import sys
 
+from typing import Dict, List, Optional, Tuple, Union
+
 LOGGER = logging.getLogger(__name__)
 sh = logging.StreamHandler(sys.stdout)
 LOGGER.addHandler(sh)
@@ -13,7 +15,7 @@ LOGGER.propagate = False
 
 ITEM_COUNT = 0
 
-StatusDictType = list[dict[str, str]]
+StatusDictType = List[Dict[str, str]]
 
 class Colors(object):
     BLUE        = "\033[1;34m"
@@ -32,7 +34,7 @@ class Colors(object):
     def colorize(text, color) -> str:
         return color + str(text) + Colors.OFF
 
-def bash(command: list[str] | str) -> tuple[bytes, bytes]:
+def bash(command: Union[List[str], str]) -> Tuple[bytes, bytes]:
     if ("list" in str(type(command))):
         command_array = [cmd.replace('"', '') for cmd in command]
     else:
@@ -42,7 +44,7 @@ def bash(command: list[str] | str) -> tuple[bytes, bytes]:
     (output, err) = proc.communicate()
     return (output, err)
 
-def generateStatusList() -> tuple[StatusDictType, int]:
+def generateStatusList() -> Tuple[StatusDictType, int]:
     global ITEM_COUNT
     (output, err) = bash("git status -s")
     if (len(err) != 0):
@@ -58,7 +60,7 @@ def generateStatusList() -> tuple[StatusDictType, int]:
     ITEM_COUNT = len(status_list) - 1
     return (status_list, ITEM_COUNT)
 
-def checkValidRef(num: str | int) -> int:
+def checkValidRef(num: Union[str, int]) -> int:
     global ITEM_COUNT
     num = int(num)
     if num < 0:
@@ -67,7 +69,7 @@ def checkValidRef(num: str | int) -> int:
         raise argparse.ArgumentTypeError("%s is an out of range" % num)
     return num
 
-def parseRange(range_string: str) -> list[int]:
+def parseRange(range_string: str) -> List[int]:
     try:
         output = []
         parts = range_string.split(",") # singles
@@ -110,7 +112,7 @@ class Less(object):
                     less.kill()
                     bash("stty echo")
 
-def main():
+def main() -> None:
     ######################
     # Generate Status List
     ######################
@@ -171,7 +173,7 @@ def main():
             " ": "        "
     }
 
-    def displayList(status_list: StatusDictType | None = None) -> None:
+    def displayList(status_list: Optional[StatusDictType] = None) -> None:
         if status_list is None:
             status_list, _ = generateStatusList()
         header = Colors.colorize("#   INDEX     CUR_TREE  FILE", Colors.YELLOW)
