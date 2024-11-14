@@ -5,8 +5,6 @@ import os
 import subprocess
 import sys
 
-from typing import Union, List
-
 LOGGER = logging.getLogger(__name__)
 sh = logging.StreamHandler(sys.stdout)
 LOGGER.addHandler(sh)
@@ -14,6 +12,8 @@ LOGGER.setLevel(logging.INFO)
 LOGGER.propagate = False
 
 ITEM_COUNT = 0
+
+StatusDictType = list[dict[str, str]]
 
 class Colors(object):
     BLUE        = "\033[1;34m"
@@ -29,10 +29,10 @@ class Colors(object):
     YELLOW      = "\033[1;33m"
 
     @staticmethod
-    def colorize(text, color):
+    def colorize(text, color) -> str:
         return color + str(text) + Colors.OFF
 
-def bash(command: Union[List[str], str]):
+def bash(command: list[str] | str) -> tuple[bytes, bytes]:
     if ("list" in str(type(command))):
         command_array = [cmd.replace('"', '') for cmd in command]
     else:
@@ -42,7 +42,7 @@ def bash(command: Union[List[str], str]):
     (output, err) = proc.communicate()
     return (output, err)
 
-def generateStatusList():
+def generateStatusList() -> tuple[StatusDictType, int]:
     global ITEM_COUNT
     (output, err) = bash("git status -s")
     if (len(err) != 0):
@@ -58,7 +58,7 @@ def generateStatusList():
     ITEM_COUNT = len(status_list) - 1
     return (status_list, ITEM_COUNT)
 
-def checkValidRef(num: Union[str, int]) -> int:
+def checkValidRef(num: str | int) -> int:
     global ITEM_COUNT
     num = int(num)
     if num < 0:
@@ -67,7 +67,7 @@ def checkValidRef(num: Union[str, int]) -> int:
         raise argparse.ArgumentTypeError("%s is an out of range" % num)
     return num
 
-def parseRange(range_string: str) -> List[int]:
+def parseRange(range_string: str) -> list[int]:
     try:
         output = []
         parts = range_string.split(",") # singles
@@ -154,7 +154,6 @@ def main():
 
     args = parser.parse_args()
 
-    # Debug
     if args.debug:
         LOGGER.setLevel(logging.DEBUG)
 
@@ -172,7 +171,7 @@ def main():
             " ": "        "
     }
 
-    def displayList(status_list = None) -> None:
+    def displayList(status_list: StatusDictType | None = None) -> None:
         if status_list is None:
             status_list, _ = generateStatusList()
         header = Colors.colorize("#   INDEX     CUR_TREE  FILE", Colors.YELLOW)
@@ -186,11 +185,9 @@ def main():
             tree_stats = Colors.colorize(git_flag_decode[item["mod"][1]], Colors.RED)
             LOGGER.info("{:<16} {:<21}  {:<21}  {} ({})".format(index, index_status, tree_stats, path, index))
 
-    # Print path if reference given
-    if (args.REF != None):
+    if (args.REF != None):  # Print path if reference given
         LOGGER.info(status_list[int(args.REF)]["filePath"])
-    # Add file to repo
-    elif (args.add != None):
+    elif (args.add != None):  # git add
         cmds = ["git", "add"]
         input_range = parseRange(args.add)
         # Split for deleted items. Git does not like handling both in the git add calls.
@@ -206,16 +203,14 @@ def main():
         bash(non_deleted_cmd)
         bash(deleted_cmd)
         displayList()
-    # Checkout file
-    elif (args.checkout != None):
+    elif (args.checkout != None):  # git checkout
         cmds = ["git", "checkout", "HEAD"]
         input_range = parseRange(args.checkout)
         file_list = [status_list[x]["filePath"] for x in input_range]
         cmds.extend(file_list)
         bash(cmds)
         displayList()
-    # Show diff
-    elif (args.diff != None):
+    elif (args.diff != None):  # git diff
         cmds = ["git", "diff", "HEAD"]
         cmds.append(status_list[int(args.diff)]["filePath"])
         (output, _) = bash(cmds)
@@ -236,16 +231,14 @@ def main():
             except IndexError as e:
                 pass
         "\n".join(output) | less
-    # Delete file
-    elif (args.delete != None):
+    elif (args.delete != None):  # rm -r
         cmds = ["rm", "-r"]
         input_range = parseRange(args.delete)
         file_list = [status_list[x]["filePath"] for x in input_range]
         cmds.extend(file_list)
         bash(cmds)
         displayList()
-    # Reset file
-    elif (args.reset != None):
+    elif (args.reset != None):  # git reset
         cmds = ["git", "reset", "HEAD"]
         input_range = parseRange(args.reset)
         file_list = [status_list[x]["filePath"] for x in input_range]
@@ -253,8 +246,7 @@ def main():
         bash(cmds)
         displayList()
     else:
-        # Display list
-        displayList()
+        displayList(status_list = status_list)
 
 if __name__ == "__main__":
     main()
