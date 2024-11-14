@@ -3,13 +3,13 @@ import setuptools
 setuptools.setup(
     name = "gst",
     packages = {".": "gst"},
-    version = "0.1.1",
+    version = "0.1.2",
     license="MIT",
     description = "Git status tool",
     author = "Chris Gravel",
     author_email = "cpagravel@gmail.com",
     url = "https://github.com/cpagravel/gst-python",
-    download_url = "https://github.com/cpagravel/gst-python/archive/0.1.1.tar.gz",
+    download_url = "https://github.com/cpagravel/gst-python/archive/0.1.2.tar.gz",
     keywords = ["git", "git status", "git workflow"],
     classifiers=[
         "Development Status :: 4 - Beta",
@@ -21,6 +21,9 @@ setuptools.setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
   ],
   entry_points = {
       'console_scripts': [
