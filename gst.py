@@ -172,8 +172,9 @@ def main():
             " ": "        "
     }
 
-    def displayList():
-        status_list, _ = generateStatusList()
+    def displayList(status_list = None) -> None:
+        if status_list is None:
+            status_list, _ = generateStatusList()
         header = Colors.colorize("#   INDEX     CUR_TREE  FILE", Colors.YELLOW)
         LOGGER.info(header)
         for (index, item) in enumerate(status_list):
