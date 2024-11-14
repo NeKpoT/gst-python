@@ -33,7 +33,3 @@ class Colors(object):
     @staticmethod
     def colorize(text, color):
         return color + str(text) + Colors.OFF
-
-    @staticmethod
-    def decolorize(text):
-        return re.sub(r"\033.*?m", "", text)
