@@ -6,6 +6,7 @@ import subprocess
 import sys
 
 from typing import Dict, List, Optional, Tuple, Union
+from collections import Counter
 
 LOGGER = logging.getLogger(__name__)
 sh = logging.StreamHandler(sys.stdout)
@@ -178,10 +179,16 @@ def main() -> None:
             status_list, _ = generateStatusList()
         header = Colors.colorize("#   INDEX     CUR_TREE  FILE", Colors.YELLOW)
         LOGGER.info(header)
+
+        # Count number of files that will have the same basename. This is used to determine if we should display the full path.
+        if len(status_list) < 150:  # We don't do this if there are too many files
+            seen = Counter([os.path.basename(item["filePath"]) for item in status_list])
+
         for (index, item) in enumerate(status_list):
             path = item["filePath"]
-            if (not args.v):
-                path = os.path.basename(path[:-1]) + path[-1]
+            basename = os.path.basename(path)
+            if (not args.v) and seen[basename] < 2:
+                path = basename
             index = Colors.colorize(index, Colors.PURPLE)
             index_status = Colors.colorize(git_flag_decode[item["mod"][0]], Colors.GREEN)
             tree_stats = Colors.colorize(git_flag_decode[item["mod"][1]], Colors.RED)
