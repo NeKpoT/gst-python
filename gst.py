@@ -183,6 +183,8 @@ def main() -> None:
         # Count number of files that will have the same basename. This is used to determine if we should display the full path.
         if len(status_list) < 150:  # We don't do this if there are too many files
             seen = Counter([os.path.basename(item["filePath"]) for item in status_list])
+        else:
+            seen = Counter()
 
         for (index, item) in enumerate(status_list):
             path = item["filePath"]
