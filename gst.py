@@ -203,9 +203,9 @@ def main() -> None:
         input_range = parseRange(args.add)
         # Split for deleted items. Git does not like handling both in the git add calls.
         file_list_non_deleted = [
-            status_list[x]["filePath"] for x in input_range if status_list[x]["mod"][1] != "D"]
+            status_list[x]["filePath"] for x in input_range if "D" not in status_list[x]["mod"]]
         file_list_deleted = [
-            status_list[x]["filePath"] for x in input_range if status_list[x]["mod"][1] == "D"]
+            status_list[x]["filePath"] for x in input_range if "D" in status_list[x]["mod"]]
         bash(cmds + file_list_non_deleted) if file_list_non_deleted else []
         bash(cmds + file_list_deleted) if file_list_deleted else []
         displayList()
