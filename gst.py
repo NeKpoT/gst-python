@@ -116,7 +116,7 @@ class Less(object):
 def open_in_editor(file_path: str) -> None:
     """Open a file in the default editor"""
     # Try to get the default editor from environment variables
-    editor = os.environ.get('EDITOR') or os.environ.get('VISUAL')
+    editor = os.environ.get('VISUAL') or os.environ.get('EDITOR')
     
     if editor:
         cmds = editor.split()
