@@ -156,7 +156,7 @@ def main() -> None:
                         + Colors.colorize("<file>", Colors.RED)))
     group1.add_argument("-D", type=checkValidRange, metavar="REF_RANGE", dest="delete", help=("eq to " + Colors.colorize("rm ", Colors.GREEN)
                         + Colors.colorize("<file>", Colors.RED)))
-    group1.add_argument("-e", type=checkValidRef, metavar="REF_INT", dest="edit", help=("open file in default editor"))
+    group1.add_argument("-e", type=checkValidRef, metavar="REF_INT", dest="edit", help=("edit file with either " + Colors.colorize("$VISUAL", Colors.GREEN) + " or " + Colors.colorize("$EDITOR ", Colors.GREEN)))
     group1.add_argument("-r", type=checkValidRange, metavar="REF_RANGE", dest="reset", help=("eq to " + Colors.colorize("git reset HEAD ", Colors.GREEN)
                         + Colors.colorize("<file>", Colors.RED)))
     parser.epilog = """
